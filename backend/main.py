@@ -3,10 +3,13 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from PIL import Image, UnidentifiedImageError
 from backend.model import predict
+from backend.database import init_db, save_prediction, get_predictions
 import io
 import os
 
 app = FastAPI(title="AI Crop Disease Detection System")
+
+init_db()
 
 frontend_path = os.path.join(
     os.path.dirname(os.path.dirname(__file__)),
@@ -105,6 +108,8 @@ async def predict_disease(file: UploadFile = File(...)):
 
     disease, confidence = predict(image)
 
+    save_prediction(disease, confidence)
+
     info = disease_info.get(
         disease,
         {
@@ -124,3 +129,12 @@ async def predict_disease(file: UploadFile = File(...)):
         "management": info["management"],
         "prevention": info["prevention"]
     }
+
+
+@app.get("/history")
+def history():
+    results = get_predictions()
+    return [
+        {"id": r[0], "disease": r[1], "confidence": r[2], "created_at": r[3]}
+        for r in results
+    ]

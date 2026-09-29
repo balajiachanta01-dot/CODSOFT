@@ -7,3 +7,4 @@ dataset/PlantVillage-Dataset/
 split/
 selected/
 .DS_Store
+crop_predictions.db

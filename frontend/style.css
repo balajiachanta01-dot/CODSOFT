@@ -157,3 +157,43 @@ body {
     color: #666;
     line-height: 1.5;
 }
+
+.history {
+    margin-top: 30px;
+    padding: 25px;
+    border-radius: 15px;
+    background: #f4f8f4;
+    border: 1px solid #d7e8d7;
+}
+
+.history h2 {
+    color: #2e7d32;
+    margin-bottom: 15px;
+}
+
+#historyList {
+    margin-top: 20px;
+}
+
+.history-item {
+    background: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    border-left: 5px solid #2e7d32;
+    text-align: left;
+}
+
+.history-item strong {
+    display: block;
+    color: #2e7d32;
+    margin-bottom: 6px;
+}
+
+.history-item span,
+.history-item small {
+    display: block;
+    margin-top: 4px;
+    color: #555;
+}
+

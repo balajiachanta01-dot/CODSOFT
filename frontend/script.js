@@ -122,3 +122,32 @@ resetButton.addEventListener("click", function () {
     management.textContent = "--";
     prevention.textContent = "--";
 });
+
+
+const historyButton = document.getElementById("historyButton");
+const historyList = document.getElementById("historyList");
+
+historyButton.addEventListener("click", async function () {
+    historyButton.textContent = "🔄 Loading...";
+
+    try {
+        const response = await fetch("/history");
+        const data = await response.json();
+
+        if (data.length === 0) {
+            historyList.innerHTML = "<p>No prediction history yet.</p>";
+        } else {
+            historyList.innerHTML = data.map(item => `
+                <div class="history-item">
+                    <strong>${item.disease.replace("___", " - ").replaceAll("_", " ")}</strong>
+                    <span>Confidence: ${item.confidence.toFixed(2)}%</span>
+                    <small>${item.created_at}</small>
+                </div>
+            `).join("");
+        }
+    } catch (error) {
+        historyList.innerHTML = "<p>Could not load prediction history.</p>";
+    }
+
+    historyButton.textContent = "🔄 Refresh History";
+});
