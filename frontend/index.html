@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Crop Disease Detection</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🌱 AI Crop Disease Detection</h1>
+
+    <p class="subtitle">
+        Upload a crop leaf image to detect possible diseases using AI.
+    </p>
+
+    <div class="upload-box" id="uploadBox">
+
+        <input type="file" id="imageInput" accept="image/*">
+
+        <img id="preview" src="" alt="Leaf Preview">
+
+        <button id="predictButton">
+            Predict Disease
+        </button>
+
+    </div>
+
+    <div id="result" class="result">
+
+        <h2>Prediction Result</h2>
+
+        <p id="disease">Disease: --</p>
+
+        <p id="confidence">Confidence: --</p>
+
+        <div class="confidence-bar">
+            <div id="confidenceFill"></div>
+        </div>
+
+        <h3>📋 Description</h3>
+        <p id="description">--</p>
+
+        <h3>🔍 Symptoms</h3>
+        <p id="symptoms">--</p>
+
+        <h3>🩺 Management</h3>
+        <p id="management">--</p>
+
+        <h3>🛡️ Prevention</h3>
+        <p id="prevention">--</p>
+
+        <button id="resetButton">
+            🔄 Predict Another Image
+        </button>
+
+    </div>
+
+    <p class="disclaimer">
+        ⚠️ This system provides AI-based predictions for educational purposes.
+        For accurate agricultural diagnosis and treatment, consult a qualified
+        agricultural expert.
+    </p>
+
+</div>
+
+<script src="/static/script.js"></script>
+
+</body>
+</html>

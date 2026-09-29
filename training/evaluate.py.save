@@ -1,0 +1,10 @@
+
+from torchvision import datasets, transforms, models
+from torch.utils.data import DataLoader
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+data_dir = "split/test"
+
+transform = transforms.Compose([
+    transforms.Res
