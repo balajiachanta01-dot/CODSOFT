@@ -1,67 +1,117 @@
 const imageInput = document.getElementById("imageInput");
 const preview = document.getElementById("preview");
+const dropZone = document.getElementById("dropZone");
+const selectedFile = document.getElementById("selectedFile");
 const predictButton = document.getElementById("predictButton");
+const loadingPanel = document.getElementById("loadingPanel");
+
+const result = document.getElementById("result");
+const resultPlaceholder = document.querySelector(".result-placeholder");
+const resultContent = document.getElementById("resultContent");
 
 const disease = document.getElementById("disease");
 const confidence = document.getElementById("confidence");
+const confidenceFill = document.getElementById("confidenceFill");
 
 const description = document.getElementById("description");
 const symptoms = document.getElementById("symptoms");
 const management = document.getElementById("management");
 const prevention = document.getElementById("prevention");
+const warning = document.getElementById("warning");
 
-const confidenceFill = document.getElementById("confidenceFill");
 const resetButton = document.getElementById("resetButton");
+const historyButton = document.getElementById("historyButton");
+const historyList = document.getElementById("historyList");
 
+let selectedImage = null;
+
+
+// -------------------------
+// IMAGE SELECTION
+// -------------------------
 
 imageInput.addEventListener("change", function () {
-    const file = imageInput.files[0];
+    if (this.files.length > 0) {
+        handleImage(this.files[0]);
+    }
+});
 
-    if (file) {
-        if (!file.type.startsWith("image/")) {
-            alert("Please select an image file.");
-            imageInput.value = "";
-            return;
-        }
+function handleImage(file) {
 
-        if (file.size > 10 * 1024 * 1024) {
-            alert("Image size must be less than 10 MB.");
-            imageInput.value = "";
-            return;
-        }
+    if (!file.type.startsWith("image/")) {
+        showError("Please select a valid image file.");
+        return;
+    }
 
-        preview.src = URL.createObjectURL(file);
+    if (file.size > 10 * 1024 * 1024) {
+        showError("Image size must be less than 10 MB.");
+        return;
+    }
+
+    selectedImage = file;
+
+    selectedFile.textContent = `Selected: ${file.name}`;
+
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+        preview.src = event.target.result;
         preview.style.display = "block";
+    };
+
+    reader.readAsDataURL(file);
+
+    dropZone.classList.add("has-image");
+}
+
+
+// -------------------------
+// DRAG AND DROP
+// -------------------------
+
+dropZone.addEventListener("dragover", function (event) {
+    event.preventDefault();
+    dropZone.classList.add("dragging");
+});
+
+dropZone.addEventListener("dragleave", function () {
+    dropZone.classList.remove("dragging");
+});
+
+dropZone.addEventListener("drop", function (event) {
+    event.preventDefault();
+
+    dropZone.classList.remove("dragging");
+
+    const files = event.dataTransfer.files;
+
+    if (files.length > 0) {
+        handleImage(files[0]);
     }
 });
 
 
+// -------------------------
+// PREDICTION
+// -------------------------
+
 predictButton.addEventListener("click", async function () {
 
-    const file = imageInput.files[0];
-
-    if (!file) {
-        alert("Please select a leaf image first.");
+    if (!selectedImage) {
+        showError("Please select a leaf image first.");
         return;
     }
 
-    predictButton.textContent = "🔄 Analyzing...";
-    predictButton.disabled = true;
-
-    disease.textContent = "Disease: Analyzing...";
-    confidence.textContent = "Confidence: --";
-
-    description.textContent = "AI is analyzing the image...";
-    symptoms.textContent = "Please wait...";
-    management.textContent = "Please wait...";
-    prevention.textContent = "Please wait...";
-
-    confidenceFill.style.width = "0%";
-
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", selectedImage);
+
+    predictButton.disabled = true;
+    predictButton.innerHTML = "✦ Analyzing...";
+
+    loadingPanel.style.display = "flex";
 
     try {
+
         const response = await fetch("/predict", {
             method: "POST",
             body: formData
@@ -70,84 +120,188 @@ predictButton.addEventListener("click", async function () {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.detail || "Prediction failed");
+            throw new Error(data.detail || "Prediction failed.");
         }
 
-        disease.textContent = "Disease: " + data.name;
-        confidence.textContent = "Confidence: " + data.confidence + "%";
-
-        if (data.confidence < 70) {
-            confidence.textContent += " ⚠️ Low confidence - please verify this result.";
-        }
-        confidenceFill.style.width = data.confidence + "%";
-
-        description.textContent = data.description;
-        symptoms.textContent = data.symptoms;
-        management.textContent = data.management;
-        prevention.textContent = data.prevention;
+        showResult(data);
 
     } catch (error) {
 
-        disease.textContent = "Disease: Error";
-        confidence.textContent = "Confidence: --";
-
-        description.textContent = error.message;
-        symptoms.textContent = "--";
-        management.textContent = "--";
-        prevention.textContent = "--";
-
-        confidenceFill.style.width = "0%";
+        showError(error.message || "Could not analyze the image.");
 
     } finally {
 
-        predictButton.textContent = "Predict Disease";
         predictButton.disabled = false;
+        predictButton.innerHTML =
+            '<span>✦</span> Analyze Leaf <span class="arrow">→</span>';
 
+        loadingPanel.style.display = "none";
     }
 });
 
+
+// -------------------------
+// DISPLAY RESULT
+// -------------------------
+
+function showResult(data) {
+
+    resultPlaceholder.classList.add("hidden");
+    resultContent.classList.remove("hidden");
+
+    result.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+    disease.textContent =
+        data.display_name || formatDiseaseName(data.disease);
+
+    confidence.textContent =
+        `${Number(data.confidence).toFixed(2)}%`;
+
+    description.textContent =
+        data.description || "No description available.";
+
+    symptoms.textContent =
+        data.symptoms || "No symptom information available.";
+
+    management.textContent =
+        data.management || "No management information available.";
+
+    prevention.textContent =
+        data.prevention || "No prevention information available.";
+
+    setTimeout(() => {
+        confidenceFill.style.width =
+            `${Math.min(Number(data.confidence), 100)}%`;
+    }, 100);
+
+    if (Number(data.confidence) < 70) {
+        warning.style.display = "block";
+        warning.textContent =
+            "⚠️ The model confidence is relatively low. Consider uploading a clearer leaf image and consult an agricultural expert.";
+    } else {
+        warning.style.display = "none";
+    }
+}
+
+
+// -------------------------
+// RESET
+// -------------------------
 
 resetButton.addEventListener("click", function () {
 
+    selectedImage = null;
     imageInput.value = "";
+
     preview.src = "";
     preview.style.display = "none";
 
-    disease.textContent = "Disease: --";
-    confidence.textContent = "Confidence: --";
+    selectedFile.textContent = "";
+
     confidenceFill.style.width = "0%";
 
-    description.textContent = "--";
-    symptoms.textContent = "--";
-    management.textContent = "--";
-    prevention.textContent = "--";
+    resultContent.classList.add("hidden");
+    resultPlaceholder.classList.remove("hidden");
+
+    document.getElementById("scanner").scrollIntoView({
+        behavior: "smooth"
+    });
 });
 
 
-const historyButton = document.getElementById("historyButton");
-const historyList = document.getElementById("historyList");
+// -------------------------
+// HISTORY
+// -------------------------
 
 historyButton.addEventListener("click", async function () {
-    historyButton.textContent = "🔄 Loading...";
+
+    historyButton.disabled = true;
+    historyButton.textContent = "Loading...";
 
     try {
+
         const response = await fetch("/history");
+
+        if (!response.ok) {
+            throw new Error("Could not load history.");
+        }
+
         const data = await response.json();
 
-        if (data.length === 0) {
-            historyList.innerHTML = "<p>No prediction history yet.</p>";
+        if (!data.length) {
+
+            historyList.innerHTML = `
+                <div class="empty-history">
+                    No prediction history yet.
+                </div>
+            `;
+
         } else {
+
             historyList.innerHTML = data.map(item => `
                 <div class="history-item">
-                    <strong>${item.disease.replace("___", " - ").replaceAll("_", " ")}</strong>
-                    <span>Confidence: ${item.confidence.toFixed(2)}%</span>
-                    <small>${item.created_at}</small>
+
+                    <strong>
+                        ${formatDiseaseName(item.disease)}
+                    </strong>
+
+                    <span>
+                        ${Number(item.confidence).toFixed(2)}% confidence
+                    </span>
+
+                    <small>
+                        ${item.created_at}
+                    </small>
+
                 </div>
             `).join("");
         }
+
     } catch (error) {
-        historyList.innerHTML = "<p>Could not load prediction history.</p>";
+
+        historyList.innerHTML = `
+            <div class="empty-history">
+                Could not load prediction history.
+            </div>
+        `;
+
+    } finally {
+
+        historyButton.disabled = false;
+        historyButton.textContent = "Refresh History ↻";
+    }
+});
+
+
+// -------------------------
+// HELPERS
+// -------------------------
+
+function formatDiseaseName(name) {
+
+    if (!name) {
+        return "Unknown condition";
     }
 
-    historyButton.textContent = "🔄 Refresh History";
-});
+    return name
+        .replace("___", " — ")
+        .replaceAll("_", " ")
+        .replace(",bell", " Bell");
+}
+
+
+function showError(message) {
+
+    warning.style.display = "block";
+    warning.textContent = `⚠️ ${message}`;
+
+    resultPlaceholder.classList.remove("hidden");
+    resultContent.classList.add("hidden");
+
+    document.getElementById("insights").scrollIntoView({
+        behavior: "smooth"
+    });
+}

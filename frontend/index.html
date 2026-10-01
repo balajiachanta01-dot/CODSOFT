@@ -3,75 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Crop Disease Detection</title>
+    <title>CropVision AI — Intelligent Crop Health</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-<div class="container">
+<div class="background-glow glow-one"></div>
+<div class="background-glow glow-two"></div>
 
-    <h1>🌱 AI Crop Disease Detection</h1>
-
-    <p class="subtitle">
-        Upload a crop leaf image to detect possible diseases using AI.
-    </p>
-
-    <div class="upload-box" id="uploadBox">
-
-        <input type="file" id="imageInput" accept="image/*">
-
-        <img id="preview" src="" alt="Leaf Preview">
-
-        <button id="predictButton">
-            Predict Disease
-        </button>
-
+<header class="navbar">
+    <div class="brand">
+        <div class="brand-icon">✦</div>
+        <div>
+            <strong>CropVision</strong>
+            <span>AI</span>
+        </div>
     </div>
 
-    <div id="result" class="result">
+    <nav>
+        <a href="#scanner">Scan</a>
+        <a href="#insights">Insights</a>
+        <a href="#history">History</a>
+    </nav>
 
-        <h2>Prediction Result</h2>
+    <div class="status">
+        <span class="status-dot"></span>
+        AI System Online
+    </div>
+</header>
 
-        <p id="disease">Disease: --</p>
+<main>
 
-        <p id="confidence">Confidence: --</p>
-
-        <div class="confidence-bar">
-            <div id="confidenceFill"></div>
+<section class="hero">
+    <div class="hero-content">
+        <div class="eyebrow">
+            <span>✦</span> AI-POWERED CROP INTELLIGENCE
         </div>
 
-        <h3>📋 Description</h3>
-        <p id="description">--</p>
+        <h1>
+            See what's happening<br>
+            <span>on your leaves.</span>
+        </h1>
 
-        <h3>🔍 Symptoms</h3>
-        <p id="symptoms">--</p>
+        <p>
+            Upload a crop leaf image and let our deep-learning
+            system identify possible diseases in seconds.
+        </p>
 
-        <h3>🩺 Management</h3>
-        <p id="management">--</p>
+        <div class="hero-stats">
+            <div>
+                <strong>9</strong>
+                <span>Conditions</span>
+            </div>
+            <div>
+                <strong>AI</strong>
+                <span>ResNet18</span>
+            </div>
+            <div>
+                <strong>99.8%</strong>
+                <span>Test Accuracy*</span>
+            </div>
+        </div>
+    </div>
 
-        <h3>🛡️ Prevention</h3>
-        <p id="prevention">--</p>
+    <div class="hero-orbit">
+        <div class="orbit-ring ring-one"></div>
+        <div class="orbit-ring ring-two"></div>
+        <div class="leaf-orbit">🌿</div>
+    </div>
+</section>
 
-        <button id="resetButton">
-            🔄 Predict Another Image
+<section class="scanner-section" id="scanner">
+
+    <div class="section-label">
+        <span>01</span> DISEASE SCANNER
+    </div>
+
+    <div class="scanner-card">
+
+        <div class="scanner-top">
+            <div>
+                <h2>Analyze a leaf</h2>
+                <p>Upload a clear image of the affected crop leaf.</p>
+            </div>
+
+            <div class="ai-badge">
+                <span>●</span> AI READY
+            </div>
+        </div>
+
+        <div class="drop-zone" id="dropZone">
+
+            <div class="upload-icon">
+                ↑
+            </div>
+
+            <h3>Drop your leaf image here</h3>
+
+            <p>or choose an image from your device</p>
+
+            <label for="imageInput" class="choose-button">
+                Choose Image
+            </label>
+
+            <input type="file" id="imageInput" accept="image/*">
+
+            <small>JPG, JPEG or PNG · Maximum 10 MB</small>
+
+            <img id="preview" src="" alt="Leaf preview">
+
+        </div>
+
+        <div class="selected-file" id="selectedFile"></div>
+
+        <button id="predictButton" class="analyze-button">
+            <span>✦</span>
+            Analyze Leaf
+            <span class="arrow">→</span>
         </button>
 
+        <div class="loading-panel" id="loadingPanel">
+            <div class="loader"></div>
+            <div>
+                <strong>AI is analyzing your leaf...</strong>
+                <span>Running image preprocessing and disease classification</span>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section class="result-section" id="insights">
+
+    <div class="section-label">
+        <span>02</span> AI INSIGHT
     </div>
 
-    <div class="history">
-        <h2>📜 Prediction History</h2>
-        <button id="historyButton">View History</button>
-        <div id="historyList"></div>
+    <div id="result" class="result-card">
+
+        <div class="result-placeholder">
+            <div class="placeholder-icon">✦</div>
+            <h2>Your AI insight will appear here</h2>
+            <p>Upload a leaf image above to begin analysis.</p>
+        </div>
+
+        <div id="resultContent" class="hidden">
+
+            <div class="result-header">
+                <div>
+                    <div class="result-kicker">DETECTED CONDITION</div>
+                    <h2 id="disease">--</h2>
+                </div>
+
+                <div class="confidence">
+                    <span>CONFIDENCE</span>
+                    <strong id="confidence">--</strong>
+                </div>
+            </div>
+
+            <div class="confidence-track">
+                <div id="confidenceFill"></div>
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-card">
+                    <span class="info-icon">◉</span>
+                    <small>DESCRIPTION</small>
+                    <p id="description">--</p>
+                </div>
+
+                <div class="info-card">
+                    <span class="info-icon">⌁</span>
+                    <small>SYMPTOMS</small>
+                    <p id="symptoms">--</p>
+                </div>
+
+                <div class="info-card">
+                    <span class="info-icon">✚</span>
+                    <small>MANAGEMENT</small>
+                    <p id="management">--</p>
+                </div>
+
+                <div class="info-card">
+                    <span class="info-icon">✓</span>
+                    <small>PREVENTION</small>
+                    <p id="prevention">--</p>
+                </div>
+
+            </div>
+
+            <div id="warning" class="warning"></div>
+
+            <button id="resetButton" class="secondary-button">
+                Analyze another leaf →
+            </button>
+
+        </div>
+    </div>
+</section>
+
+<section class="history-section" id="history">
+
+    <div class="section-label">
+        <span>03</span> PREDICTION HISTORY
     </div>
 
-    <p class="disclaimer">
-        ⚠️ This system provides AI-based predictions for educational purposes.
-        For accurate agricultural diagnosis and treatment, consult a qualified
-        agricultural expert.
+    <div class="history-card">
+
+        <div class="history-header">
+            <div>
+                <h2>Recent analyses</h2>
+                <p>Your previous AI predictions are stored locally.</p>
+            </div>
+
+            <button id="historyButton" class="history-button">
+                Refresh History ↻
+            </button>
+        </div>
+
+        <div id="historyList" class="history-list">
+            <div class="empty-history">
+                No prediction history loaded yet.
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section class="technology">
+
+    <div class="tech-card">
+        <span>POWERED BY</span>
+        <strong>ResNet18</strong>
+        <p>Deep-learning image classification</p>
+    </div>
+
+    <div class="tech-card">
+        <span>DATASET</span>
+        <strong>PlantVillage</strong>
+        <p>Curated crop disease imagery</p>
+    </div>
+
+    <div class="tech-card">
+        <span>SUPPORTED CROPS</span>
+        <strong>3 Crops</strong>
+        <p>Tomato · Potato · Bell Pepper</p>
+    </div>
+
+</section>
+
+</main>
+
+<footer>
+    <div>
+        <strong>CropVision AI</strong>
+        <span> · B.Tech Project</span>
+    </div>
+
+    <p>
+        AI predictions are for educational purposes and should not replace
+        professional agricultural diagnosis.
     </p>
-
-</div>
+</footer>
 
 <script src="/static/script.js"></script>
 
