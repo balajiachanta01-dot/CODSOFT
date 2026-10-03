@@ -869,3 +869,26 @@ footer {
         margin: 14px auto 0;
     }
 }
+
+/* Keep uploaded leaf preview compact on all screens */
+#preview {
+    display: block !important;
+    width: 140px !important;
+    height: 140px !important;
+    max-width: 140px !important;
+    max-height: 140px !important;
+    object-fit: cover !important;
+    margin: 16px auto !important;
+    border-radius: 14px !important;
+}
+
+/* Mobile Chrome */
+@media (max-width: 600px) {
+    #preview {
+        width: 100px !important;
+        height: 100px !important;
+        max-width: 100px !important;
+        max-height: 100px !important;
+        margin: 12px auto !important;
+    }
+}
