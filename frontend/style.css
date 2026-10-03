@@ -846,3 +846,26 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
+/* Compact leaf image preview */
+#preview {
+    display: none;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 14px;
+    margin: 16px auto 0;
+    border: 1px solid rgba(243, 240, 232, 0.14);
+}
+
+#preview:not([src=""]) {
+    display: block;
+}
+
+@media (max-width: 600px) {
+    #preview {
+        width: 110px;
+        height: 110px;
+        margin: 14px auto 0;
+    }
+}
