@@ -459,15 +459,15 @@ input {
 
 .preview {
     display: none;
-
-    width: 100%;
-    max-height: 330px;
-
+    width: 120px;
+    height: 120px;
+    max-width: 100%;
     object-fit: contain;
-
     border-radius: 12px;
     border: 1px solid var(--line);
+    margin: 12px auto;
 }
+
 
 .analyze-button {
     width: 100%;
